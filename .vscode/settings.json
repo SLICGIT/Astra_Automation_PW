@@ -1,0 +1,6 @@
+{
+  "code-runner.executorMap": {
+    "typescript": "cmd /c npx playwright test tests/AstraProposalCreation.spec.ts"
+  },
+  "code-runner.runInTerminal": true
+}
