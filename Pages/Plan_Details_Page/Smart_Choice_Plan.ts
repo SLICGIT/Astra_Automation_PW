@@ -94,7 +94,7 @@ export class SCP {
 
             if(await this.stepRiderCheckbox.isVisible({timeout: 5000})) {
                 
-                await this.stepRiderCheckbox.waitFor({ state: 'visible', timeout: 5000 });
+                await this.stepRiderCheckbox.waitFor({ state: 'visible' });
                 await this.page.waitForTimeout(500);
                 await this.stepRiderCheckbox.click();
             }

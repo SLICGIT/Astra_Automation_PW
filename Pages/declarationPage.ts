@@ -54,6 +54,7 @@ export class declarationPage{
 
         await this.page.waitForLoadState('load');
         await this.LAPhotoText.waitFor({state:'visible'});
+        await this.page.waitForTimeout(500);
         await this.uploadLAPhoto.setInputFiles(declareData.LA_Photo);
         await this.page.waitForLoadState('networkidle');
 
@@ -62,6 +63,7 @@ export class declarationPage{
 
         if(lifetype === 'Other Life'){
 
+            await this.page.waitForTimeout(500);
             await this.uploadPropPhoto.setInputFiles(declareData.Prop_Photo);
             await this.page.waitForLoadState('networkidle');
 

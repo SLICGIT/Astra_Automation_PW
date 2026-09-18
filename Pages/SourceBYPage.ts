@@ -32,6 +32,7 @@ export class SourceByPage {
     
 
     await this.page.waitForLoadState('load');
+    await this.page.waitForTimeout(2000);
 
     await this.policySourceByMeYes.waitFor({ state: 'visible' });
     await this.policySourceByMeYes.click();

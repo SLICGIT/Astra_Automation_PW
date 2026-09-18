@@ -2,7 +2,7 @@ import { Page, Locator } from '@playwright/test';
 import { DropdownActions } from '../utils/dropdownsUtil';
 import { getData } from '../utils/readExcelUtil';
 
-export class MedicalPage {
+export class PropMedicalPage {
   private page: Page;
 
   // Locators
@@ -106,12 +106,11 @@ export class MedicalPage {
     // this.weightGainQuestion = page.locator(`//button[@id='MedicDWLDWG' and text()='No']`);
     // this.mentalIllnessQuestion = page.locator(`//button[@id='MedicEmotionBreak' and text()='No']`);
     this.proposerMedicalDetails = page.locator("//h6[text()='Proposer Medical Details']");
-    
 
   }
 
   // Main Method
-  async fillMedicalDetails(TC_ID: string, planName: string) {
+  async fillPropMedicalDetails(TC_ID: string, planName: string) {
 
     const LAdata = getData("Medical_Details_Page", TC_ID);
     const data = getData("LA_Details_Page", TC_ID);
@@ -121,163 +120,166 @@ export class MedicalPage {
 
     await this.page.waitForLoadState('load');
 
-    // Basic inputs
-    await this.weight.fill(LAdata['Weight']);
-    await this.height.fill(LAdata['Height']);
+    await this.page.waitForTimeout(2000);
 
-    //  Good Health Flow
-    if (planName.startsWith(LAdata['GH_PlanName'])) {
+    if(await this.proposerMedicalDetails.isVisible()){
 
-      await this.goodhealth.click();
+        // Basic inputs
+        await this.weight.fill(LAdata['Weight']);
+        await this.height.fill(LAdata['Height']);
 
-      if (data['LA_Gender'] === 'Female') {
-        await this.GynDisorderQuestion.click();
-      }
+        //  Good Health Flow
+        if (planName.startsWith(LAdata['GH_PlanName'])) {
 
-    } else {
+        await this.goodhealth.click();
 
-      //  Smoke
-      // if (!(planName.startsWith(LAdata['Health_PlanName1'])/* || planName.startsWith(LAdata['Health_PlanName2'])*/)) {
-
-      //   await this.SmokeQuestion.click();
-
-      //   if (LAdata['Qu_Smoke'] === 'Yes') {
-      //     await dropdown.selectAntDropdown('SmTy', LAdata['Smoke_Type']);
-      //     await this.SmokeQuantity.fill(LAdata['Smoke_Quantity']);  
-      //   }
-      // }
-        // Flexi Shield Condition
-      
-      if (planName.toLowerCase() === 'shriram life flexi shield' || homeData.Proposal_Type === "Combo") {
-        await this.WeightlossGainBtn.click();
-        await this.SuicideAttempt.click();
-      }
-
-      //  Alcohol
-      await this.AlcoholQuestion.click();
-
-      if (LAdata['Qu_Alcohol'] === 'Yes') {
-        await dropdown.selectAntDropdown('AlcohTy', LAdata['Alcohol_Type']);
-        await this.AlcoholQuantity.fill(LAdata['Alcohol_Quantity']);
-      }
-
-      //  Deformity
-      if (!planName.toLowerCase().startsWith("tulip combi")) {
-        // await this.DeformityQuestion.click();
-      }
-
-      if (LAdata['Qu_Deformity'] === 'Yes') {
-        await dropdown.selectAntDropdown('DefTy', LAdata['Deformity_Type']);
-        await dropdown.selectAntDropdown('PerDis', LAdata['Disability%']);
-        await dropdown.selectAntDropdown('Reason1', LAdata['Deformity_Reason']);
-
-        await this.AidWalkBtn.click();
-
-        await dropdown.selectAntDropdown('LimbAff', LAdata['Limbs_Affected']);
-      }
-
-      //  Drugs
-      await this.DrugsQuestion.click();
-      if (LAdata['Qu_Drugs'] === 'Yes') {
-        await this.DrugDetails.fill(LAdata['Drug_Details']);
-      }
-
-      //  Leave
-      await this.LeaveQuestion.click();
-      if (LAdata['Qu_Leave'] === 'Yes') {
-        await this.LeaveDetails.fill(LAdata['Leave_Details']);
-      }
-
-      //  Medical Treatment
-      await this.MedicalTreatmentQuestion.click();
-      if (LAdata['Qu_MedicalTreatment'] === 'Yes') {
-        await this.MedicalTreatmentDetails.fill(LAdata['MedTreat_Details']);
-      }
-
-      // Ailments
-      await this.AilmentsQuestion.click();
-      if (LAdata['Qu_Ailments'] === 'Yes') {
-        await this.AilmentDetails.fill(LAdata['Ailment_Details']);
-      }
-
-      //  Disease
-      await this.HIVQuestion.click();
-      if (LAdata['Qu_Disease'] === 'Yes') {
-        await this.HIVDetails.fill(LAdata['Disease_Details']);
-      }
-
-      //  Respiratory
-      await this.RespiratoryQuestion.click();
-      if (LAdata['Qu_Disorders'] === 'Yes') {
-        await this.RespiratoryDetails.fill(LAdata['Disorder_Details']);
-      }
-
-      //  Diabetes
-      await this.BPDiaQuestion.click();
-      if (LAdata['Qu_Diabetes'] === 'Yes') {
-        await this.BPDiaDetails.fill(LAdata['Diabetes_Details']);
-      }
-
-      //  Other Illness
-      await this.OtherIllQuestion.click();
-      if (LAdata['Qu_Other_Illness'] === 'Yes') {
-        await this.OtherIllDetails.fill(LAdata['OtherIll_Details']);
-      }
-
-      //  Eye Disorder
-      await this.EarEyesDisorderQuestion.click();
-      if (LAdata['Qu_EyeDisorder'] === 'Yes') {
-        await this.EarEyesDisorderDetails.fill(LAdata['EyeDisorder_Details']);
-      }
-
-      //  Hospitalization
-      await this.HospitalIlQuestion.click();
-      if (LAdata['Qu_Hospitalize'] === 'Yes') {
-        await this.HospitalIlDetails.fill(LAdata['Hospitalize_Details']);
-      }
-
-      // Anaemia
-      await this.AnaemiaQuestion.click();
-      if (LAdata['Qu_Anaemia'] === 'Yes') {
-        await this.AnaemiaDetails.fill(LAdata['Anaemia_Details']);
-      }
-
-      // Female Specific
-      if (data['LA_Gender'] === 'Female' && data['LA_Marital_Status'] === 'Married') {
-
-        await this.PregnencyQuestion.click();
-        if (LAdata['Qu_Pregnant'] === 'Yes') {
-          await this.PregnancyDetails.fill(LAdata['Pregnancy_Weeks']);
+        if (data['LA_Gender'] === 'Female') {
+            await this.GynDisorderQuestion.click();
         }
 
-        await this.MisscarriageQuestion.click();
-        if (LAdata['Qu_Abortion'] === 'Yes') {
-          await this.AbortionDetails.fill(LAdata['Abortion_Date']);
-          await this.page.keyboard.press('Enter');
+        } else {
+
+        //  Smoke
+        // if (!(planName.startsWith(LAdata['Health_PlanName1'])/* || planName.startsWith(LAdata['Health_PlanName2'])*/)) {
+
+          await this.SmokeQuestion.click();
+
+            if (LAdata['Qu_Smoke'] === 'Yes') {
+            await dropdown.selectAntDropdown('SmTy', LAdata['Smoke_Type']);
+            await this.SmokeQuantity.fill(LAdata['Smoke_Quantity']);  
+            }
+        // }
+            // Flexi Shield Condition
+        
+        if (planName.toLowerCase() === 'shriram life flexi shield' || homeData.Proposal_Type === "Combo") {
+            await this.WeightlossGainBtn.click();
+            await this.SuicideAttempt.click();
         }
 
-        await this.DeliveredBabyQuestion.click();
-        if (LAdata['Qu_Delivery'] === 'Yes') {
-          await this.DeliveryDetails.fill(LAdata['Delivery_Date']);
-          await this.page.keyboard.press('Enter');
+        //  Alcohol
+        await this.AlcoholQuestion.click();
+
+        if (LAdata['Qu_Alcohol'] === 'Yes') {
+            await dropdown.selectAntDropdown('AlcohTy', LAdata['Alcohol_Type']);
+            await this.AlcoholQuantity.fill(LAdata['Alcohol_Quantity']);
         }
 
-        await this.GynProblemQuestion.click();
-        if (LAdata['Qu_GynTreatment'] === 'Yes') {
-          await this.GynProblemDetails.fill(LAdata['GynTreat_Details']);
+        //  Deformity
+        if (!planName.toLowerCase().startsWith("tulip combi")) {
+            // await this.DeformityQuestion.click();
         }
-      }
+
+        if (LAdata['Qu_Deformity'] === 'Yes') {
+            await dropdown.selectAntDropdown('DefTy', LAdata['Deformity_Type']);
+            await dropdown.selectAntDropdown('PerDis', LAdata['Disability%']);
+            await dropdown.selectAntDropdown('Reason1', LAdata['Deformity_Reason']);
+
+            await this.AidWalkBtn.click();
+
+            await dropdown.selectAntDropdown('LimbAff', LAdata['Limbs_Affected']);
+        }
+
+        //  Drugs
+        await this.DrugsQuestion.click();
+        if (LAdata['Qu_Drugs'] === 'Yes') {
+            await this.DrugDetails.fill(LAdata['Drug_Details']);
+        }
+
+        //  Leave
+        await this.LeaveQuestion.click();
+        if (LAdata['Qu_Leave'] === 'Yes') {
+            await this.LeaveDetails.fill(LAdata['Leave_Details']);
+        }
+
+        //  Medical Treatment
+        await this.MedicalTreatmentQuestion.click();
+        if (LAdata['Qu_MedicalTreatment'] === 'Yes') {
+            await this.MedicalTreatmentDetails.fill(LAdata['MedTreat_Details']);
+        }
+
+        // Ailments
+        await this.AilmentsQuestion.click();
+        if (LAdata['Qu_Ailments'] === 'Yes') {
+            await this.AilmentDetails.fill(LAdata['Ailment_Details']);
+        }
+
+        //  Disease
+        await this.HIVQuestion.click();
+        if (LAdata['Qu_Disease'] === 'Yes') {
+            await this.HIVDetails.fill(LAdata['Disease_Details']);
+        }
+
+        //  Respiratory
+        await this.RespiratoryQuestion.click();
+        if (LAdata['Qu_Disorders'] === 'Yes') {
+            await this.RespiratoryDetails.fill(LAdata['Disorder_Details']);
+        }
+
+        //  Diabetes
+        await this.BPDiaQuestion.click();
+        if (LAdata['Qu_Diabetes'] === 'Yes') {
+            await this.BPDiaDetails.fill(LAdata['Diabetes_Details']);
+        }
+
+        //  Other Illness
+        await this.OtherIllQuestion.click();
+        if (LAdata['Qu_Other_Illness'] === 'Yes') {
+            await this.OtherIllDetails.fill(LAdata['OtherIll_Details']);
+        }
+
+        //  Eye Disorder
+        await this.EarEyesDisorderQuestion.click();
+        if (LAdata['Qu_EyeDisorder'] === 'Yes') {
+            await this.EarEyesDisorderDetails.fill(LAdata['EyeDisorder_Details']);
+        }
+
+        //  Hospitalization
+        await this.HospitalIlQuestion.click();
+        if (LAdata['Qu_Hospitalize'] === 'Yes') {
+            await this.HospitalIlDetails.fill(LAdata['Hospitalize_Details']);
+        }
+
+        // Anaemia
+        await this.AnaemiaQuestion.click();
+        if (LAdata['Qu_Anaemia'] === 'Yes') {
+            await this.AnaemiaDetails.fill(LAdata['Anaemia_Details']);
+        }
+
+        // Female Specific
+        if (data['LA_Gender'] === 'Female' && data['LA_Marital_Status'] === 'Married') {
+
+            await this.PregnencyQuestion.click();
+            if (LAdata['Qu_Pregnant'] === 'Yes') {
+            await this.PregnancyDetails.fill(LAdata['Pregnancy_Weeks']);
+            }
+
+            await this.MisscarriageQuestion.click();
+            if (LAdata['Qu_Abortion'] === 'Yes') {
+            await this.AbortionDetails.fill(LAdata['Abortion_Date']);
+            await this.page.keyboard.press('Enter');
+            }
+
+            await this.DeliveredBabyQuestion.click();
+            if (LAdata['Qu_Delivery'] === 'Yes') {
+            await this.DeliveryDetails.fill(LAdata['Delivery_Date']);
+            await this.page.keyboard.press('Enter');
+            }
+
+            await this.GynProblemQuestion.click();
+            if (LAdata['Qu_GynTreatment'] === 'Yes') {
+            await this.GynProblemDetails.fill(LAdata['GynTreat_Details']);
+            }
+        }
+        }
+
+        // Next
+        await this.nextButton.click();
+        console.log(" Proposer Medical Details filled successfully");
+
+
+
     }
-
-    // Next
-    await this.nextButton.click();
-    console.log(" Medical Details filled successfully");
-
-    await this.page.waitForLoadState('load');
-    await this.page.waitForLoadState('networkidle');
-
-  }
-
+}
   
 
 }

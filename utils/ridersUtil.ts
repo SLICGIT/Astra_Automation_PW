@@ -2,6 +2,7 @@ import { Page, Locator } from '@playwright/test';
 import { getData } from './readExcelUtil';
 import { ScreenshotUtil } from './screenshotUtil';
 import { DropdownActions } from './dropdownsUtil';
+import { GlobalConfig } from '../config/globalConfig';
 
 export class riderDetails {
     readonly page: Page;
@@ -24,6 +25,10 @@ export class riderDetails {
     readonly MatRiderEditButton: Locator;
     readonly MatRiderSA: Locator;
     readonly MatRiderSaveButton: Locator;
+
+    readonly wopXRiderCheckbox: Locator;
+    readonly wopXOption1Checkbox: Locator;
+    readonly wopXOption3Checkbox: Locator;
 
     constructor(page: Page) {
         this.page = page;
@@ -48,11 +53,17 @@ export class riderDetails {
         this.MatRiderEditButton = page.locator("//div[contains(@class, 'ant-modal-mask')]/following::div[@class='RiderSaveBtn'][2]/img");
         this.MatRiderSA = page.locator("//div[contains(@class, 'ant-modal-mask')]/following::input[@name='SumAssured'][2]");
         this.MatRiderSaveButton = page.locator("//div[contains(@class, 'ant-modal-mask')]/following::span[text()='Save'][2]");
+
+        this.wopXRiderCheckbox = page.locator("(//label[contains(text(),'Waiver of Premium Rider V0X')]/parent::div/label/span/input)[1]");
+        this.wopXOption1Checkbox = page.locator("(//div[contains(@class, 'ant-modal-mask')]/following::input[@type='checkbox'])[1]");
+        this.wopXOption3Checkbox = page.locator("(//div[contains(@class, 'ant-modal-mask')]/following::input[@type='checkbox'])[2]");
+
     }
 
     async fillRiderDetails(TC_ID: string) {
 
         const data = getData("Plan_Details_Page", TC_ID);
+        const homeData = getData("Home_Page", TC_ID);
         const dropdown = new DropdownActions(this.page)
 
         // Fill ADD Rider Details (ULIP Rider)
@@ -158,18 +169,120 @@ export class riderDetails {
 
         }
 
+        if(homeData.Life_Type === 'Own Life') {
+
+            if(data['WOP_Option2_Rider']?.toString().toLowerCase() === 'yes') {
+
+                await this.wopXRiderCheckbox.click();
+                await this.riderEditButton.waitFor({state: 'visible'});
+                await this.riderEditButton.click();
+                await this.page.waitForLoadState('load');
+                await this.page.waitForTimeout(1000); // Equivalent of Wait.addWait()
+
+                await dropdown.selectRiderDropdown("PolicyTerm", data.WOP_Option2_PT);
+                await dropdown.selectRiderDropdown("PermiumTerm", data.WOP_Option2_PPT);
+                await this.riderSaveButton.click();
+                await ScreenshotUtil.capture(this.page, "Plan_Details_Rider");
+                await this.riderCloseButton.click();
+
+            }
+
+        } else {
+
+            if(data['WOP_Option1_Rider']?.toString().toLowerCase() === 'yes' && data['WOP_Option3_Rider']?.toString().toLowerCase() === 'yes') {
+
+                await this.wopXRiderCheckbox.click();
+
+                // Edit and Save WOP Option 1 Details
+                await this.riderEditButton.waitFor({state: 'visible'});
+                await this.riderEditButton.click();
+                await this.page.waitForLoadState('load');
+                await this.page.waitForTimeout(1000); // Equivalent of Wait.addWait()
+
+                await dropdown.selectRiderDropdown("PolicyTerm", data.WOP_Option1_PT);
+                await dropdown.selectRiderDropdown("PermiumTerm", data.WOP_Option1_PPT);
+                await this.riderSaveButton.click();
+                await ScreenshotUtil.capture(this.page, "Plan_Details_Rider");
+
+                // Edit and Save WOP Option 1 Details
+                await this.MatRiderEditButton.waitFor({state: 'visible'});
+                await this.MatRiderEditButton.click();
+                await this.page.waitForLoadState('load');
+                await this.page.waitForTimeout(1000); // Equivalent of Wait.addWait()
+
+                await dropdown.selectMatRiderDropdown("PolicyTerm", data.WOP_Option3_PT);
+                await dropdown.selectMatRiderDropdown("PermiumTerm", data.WOP_Option3_PPT);
+                await this.MatRiderSaveButton.click();
+                await ScreenshotUtil.capture(this.page, "Plan_Details_Rider");
+                await this.riderCloseButton.click();
+
+
+            } else if(data['WOP_Option1_Rider']?.toString().toLowerCase() === 'yes') {
+
+                await this.wopXRiderCheckbox.click();
+                await this.wopXOption3Checkbox.waitFor({state: 'visible'});
+                await this.wopXOption3Checkbox.click();
+
+                await this.riderEditButton.waitFor({state: 'visible'});
+                await this.riderEditButton.click();
+                await this.page.waitForLoadState('load');
+                await this.page.waitForTimeout(1000); // Equivalent of Wait.addWait()
+
+                await dropdown.selectRiderDropdown("PolicyTerm", data.WOP_Option1_PT);
+                await dropdown.selectRiderDropdown("PermiumTerm", data.WOP_Option1_PPT);
+                await this.riderSaveButton.click();
+                await ScreenshotUtil.capture(this.page, "Plan_Details_Rider");
+                await this.riderCloseButton.click();
+
+            } else if(data['WOP_Option3_Rider']?.toString().toLowerCase() === 'yes') {
+
+                await this.wopXRiderCheckbox.click();
+                await this.wopXOption1Checkbox.waitFor({state: 'visible'});
+                await this.wopXOption1Checkbox.click();
+
+                await this.MatRiderEditButton.waitFor({state: 'visible'});
+                await this.MatRiderEditButton.click();
+                await this.page.waitForLoadState('load');
+                await this.page.waitForTimeout(1000); // Equivalent of Wait.addWait()
+
+                await dropdown.selectMatRiderDropdown("PolicyTerm", data.WOP_Option3_PT);
+                await dropdown.selectRiderDropdown("PermiumTerm", data.WOP_Option3_PPT);
+                await this.MatRiderSaveButton.click();
+                await ScreenshotUtil.capture(this.page, "Plan_Details_Rider");
+                await this.riderCloseButton.click();
+
+            }
+
+        }
+
     }
 
     async riderDetails(policyTerm: string, premiumTerm: string, sumAssured: string) {
 
-        const dropdown = new DropdownActions(this.page)
+        const dropdown = new DropdownActions(this.page);
+
+        const homedata = getData('Home_Page',GlobalConfig.testCaseID);
+        const plandata = getData('Plan_Details_Page',GlobalConfig.testCaseID);
         
-        await this.riderEditButton.waitFor({state: 'visible'});
-        await this.riderEditButton.click();
+        if (homedata.Proposal_Type !== "Combo"){
+            await this.riderEditButton.waitFor({state: 'visible'});
+            await this.riderEditButton.click();
+        }
+
         await this.page.waitForLoadState('load');
         await this.page.waitForTimeout(1000); // Equivalent of Wait.addWait()
 
         await dropdown.selectRiderDropdown("PolicyTerm", policyTerm);
+         await this.page.waitForTimeout(1000);
+
+        if (homedata.Proposal_Type === "Combo"){
+            await dropdown.selectRiderDropdown("PremiumTermSlab",plandata.Tulip_Rider_PT_Slab);
+            // await dropdown.selectDropdownValueByLabel("Premium Term Slab",plandata.Tulip_Rider_PT_Slab)
+            await this.page.waitForLoadState('load');
+            await this.page.waitForTimeout(1000);
+        }
+
+
         await dropdown.selectRiderDropdown("PermiumTerm", premiumTerm);
         await this.riderSA.waitFor({state: 'visible'});
         await this.riderSA.fill(sumAssured);

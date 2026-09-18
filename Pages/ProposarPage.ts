@@ -82,8 +82,12 @@ export class ProposerDetailsPage {
         await this.aadhaar.click();
         await this.page.waitForLoadState('load');
         await this.aadhaar.fill(LAdata.Prop_Aadhaar);
-        await dropdown.selectAntDropdown('PRGN', LAdata.Prop_Gender);
-        await dropdown.selectAntDropdown('ProMS', LAdata.Prop_MaritalStatus);
+
+        if(homeData.Proposal_Type !== 'Combo') {
+            await dropdown.selectAntDropdown('PRGN', LAdata.Prop_Gender);
+            await dropdown.selectAntDropdown('ProMS', LAdata.Prop_MaritalStatus);
+        }
+
         await this.fatherName.fill(GenerateName.getName());
         await dropdown.selectAntDropdown('PropRelLA', LAdata.Prop_Relation);
 
@@ -93,7 +97,13 @@ export class ProposerDetailsPage {
 
         await this.pan.fill(LAdata.Prop_PAN);
         await dropdown.selectAntDropdown('PropEDuQual', 'Graduation');
-        await dropdown.selectAntDropdown('LAAnInR', LAdata.Prop_Income_Range);
+
+        if(homeData.Proposal_Type !== 'Combo') {
+            await dropdown.selectAntDropdown('LAAnInR', LAdata.Prop_Income_Range);
+        } else {
+            await this.occupation.fill(LAdata.Prop_Occupation);
+            await dropdown.selectAntDropdown('NT1', 'Indian');
+        }
 
         // await this.occupation.fill(LAdata.Prop_Occupation);
         await this.income.fill(LAdata.Prop_Income);
@@ -116,12 +126,16 @@ export class ProposerDetailsPage {
         //await waitForLoader(this.page);
         await this.page.waitForLoadState('networkidle');
 
-        await this.PEP.click();
         await this.disabilityNo.click();
-        await this.EIA.click();
-        await dropdown.selectAntDropdown('Occ', LAdata.Prop_Occupation);
-        await dropdown.selectAntDropdown('SubOccSalEmp', LAdata.Prop_Occupation_SubCat);
-        await dropdown.selectAntDropdown('Nationality', "Indian");
+
+        if(homeData.Proposal_Type !== 'Combo') {
+            await this.PEP.click();
+            await this.EIA.click();
+            await dropdown.selectAntDropdown('Occ', LAdata.Prop_Occupation);
+            await dropdown.selectAntDropdown('SubOccSalEmp', LAdata.Prop_Occupation_SubCat);
+            await dropdown.selectAntDropdown('Nationality', "Indian");
+        }
+        
 
         await this.nextBtn.click();
 

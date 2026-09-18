@@ -12,7 +12,6 @@ export class ScreenshotUtil {
     const fullPath = path.join(GlobalConfig.screenshotDir, fileName);
 
     await page.screenshot({ path: fullPath, fullPage: true });
-    await page.screenshot
 
     GlobalConfig.ssCount++;
 
@@ -34,7 +33,7 @@ export class ScreenshotUtil {
       GlobalConfig.screenshotDir,
       GlobalConfig.date,
       GlobalConfig.planName,
-      `${GlobalConfig.testCaseID}_${GlobalConfig.time}`
+      `${GlobalConfig.testCaseID}_${GlobalConfig.time}`,
     );
 
     console.log(`Screenshot Directory : ${GlobalConfig.screenshotDir}`)
@@ -42,4 +41,5 @@ export class ScreenshotUtil {
     fs.mkdirSync(GlobalConfig.screenshotDir, { recursive: true });
     // GlobalConfig.ssCount = 1; // reset counter per test case
   }
+
 }

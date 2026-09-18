@@ -21,7 +21,8 @@ export async function handleBI(page: Page, BI_Required: string) {
 
         const biDownloadBtn = page.locator("//div[@class='BI_mainModal']//following::span[text()='No']");
 
-        await biDownloadBtn.waitFor({ state: 'visible' , timeout: 1000 });
+        await biDownloadBtn.waitFor({ state: 'visible' });
         await biDownloadBtn.click();
+        await page.waitForLoadState('networkidle');
     }
 }

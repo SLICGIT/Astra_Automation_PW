@@ -7,7 +7,7 @@ import { validationCases } from '../../utils/validationCasesUtil';
 import { riderDetails } from '../../utils/ridersUtil';
 import { addFund } from '../../utils/addFundUtil';
 
-export class TulipCombi1 {
+export class TulipCombi2 {
 
     readonly page: Page;
 
@@ -26,8 +26,7 @@ export class TulipCombi1 {
     readonly totalAmount: Locator;
 
     readonly flexiRatioInput: Locator
-    readonly gjpRatioInput: Locator;
-    readonly showRiderBtn: Locator;
+    readonly wealthProRatioInput: Locator;
 
     constructor(page: Page) {
         this.page = page;
@@ -44,12 +43,11 @@ export class TulipCombi1 {
 
         this.VMER_Yes = page.locator("//span[text()='YES']/preceding-sibling::span/input[@type='checkbox']");
         this.VMER_No = page.locator("//span[text()='NO']/preceding-sibling::span/input[@type='checkbox']");
-        this.combiCalculateBtn = page.locator("(//button[@id='Newplan_Cal'])/span[text()='Calculate']");
-        this.totalAmount = page.locator("(//span[text()='Total'])[1]");
+        this.combiCalculateBtn = page.locator("(//button[@id='Newplan_Cal'])[2]");
+        this.totalAmount = page.locator("//span[text()='Total']");
 
         this.flexiRatioInput = page.locator("//input[@name='RatioValue_252']");
-        this.gjpRatioInput = page.locator("//input[@name='RatioValue_225']");
-        this.showRiderBtn = page.locator("//button[@id='Newplan_Cal']/span[text()='Show Rider']");
+        this.wealthProRatioInput = page.locator("//input[@name='RatioValue_226']");
 
     }
 
@@ -80,7 +78,7 @@ export class TulipCombi1 {
         await this.page.waitForLoadState('load');
         await dropdown.selectAntDropdown('DeathBen_252', data.Tulip_Plan1_Death_Benefit);
         await dropdown.selectAntDropdown('DeathLifeGoal_252', data.Tulip_Plan1_Death_Life_Goal);
-        // await this.flexiRatioInput.fill('50');
+        await this.flexiRatioInput.fill('50');
 
         const saAmount = Number(data['Sum_Assured'].replace(/,/g, ''));
 
@@ -96,18 +94,15 @@ export class TulipCombi1 {
         await ScreenshotUtil.capture(this.page, "Plan_Details");
 
         //Enter Golden Jubilee Plan Details
-        await this.goldenJubileeDropdown('Life Cover Option', data.Tulip_Plan2_Life_Cover_Option);
-        await dropdown.selectAntDropdown('PlansubOptval.suboption_225', data.Tulip_Plan2_Sub_Option_Cover);
-        await this.page.waitForLoadState('load');
-        await dropdown.selectAntDropdown('MaturityBenfit_225', data.Tulip_Plan2_Maturity_Benefit);
-        await this.goldenJubileeDropdown('Death Benefit', data.Tulip_Plan2_Death_Benefit);
-        // await this.gjpRatioInput.fill('50');
+        await this.wealthProDropdown('Life Cover Option', data.Tulip_Plan2_Life_Cover_Option);
+        await this.wealthProDropdown('Death Benefit', data.Tulip_Plan2_Death_Benefit);
+        await this.wealthProRatioInput.fill('50');
 
         //Fill Fund Details
         if (data.ATO_Option?.toString().toLowerCase() === "yes"){
             await this.atoOptionUlip.click()
-			await dropdown.selectAntDropdown('ATOPeriodMonths', data.ATO_Period)
-			await dropdown.selectAntDropdown('SourceFund', 'Preserver')
+            await dropdown.selectAntDropdown('ATOPeriodMonths', data.ATO_Period)
+            await dropdown.selectAntDropdown('SourceFund', 'Preserver')
         }
 
         const Fund = new addFund(this.page);
@@ -137,32 +132,20 @@ export class TulipCombi1 {
         await dropdown.selectAntDropdown('SumAssured', data.Sum_Assured);
 
         await this.page.waitForTimeout(100);
-        await this.showRiderBtn.click();
-
-        const rider = new riderDetails(this.page);
-
-        await rider.fillRiderDetails(testcaseID);
-        await this.page.waitForLoadState('networkidle');
-
-        await this.page.waitForTimeout(1000);
-
         await ScreenshotUtil.capture(this.page, "Plan_Details");
-        
 
         await this.combiCalculateBtn.click();
         await this.page.waitForLoadState('networkidle');
-        await this.page.waitForTimeout(1000);
 
         await this.totalAmount.waitFor({state: 'visible'})
         await this.totalAmount.scrollIntoViewIfNeeded();
-        await this.page.waitForTimeout(1500);
+        await this.page.waitForTimeout(1000);
         await ScreenshotUtil.capture(this.page, "Plan_Details");
 
         await this.nextBtn.scrollIntoViewIfNeeded();
-        await ScreenshotUtil.capture(this.page, "Plan_Details");
         await this.nextBtn.click();
         await this.page.waitForLoadState('networkidle');
-        await handleBI(this.page, data.BI_Required);
+        // await handleBI(this.page, data.BI_Required);
 
     }
 
@@ -191,7 +174,7 @@ export class TulipCombi1 {
 
     }
 
-    async goldenJubileeDropdown(labelText: string, valueToSelect: string) {
+    async wealthProDropdown(labelText: string, valueToSelect: string) {
        
         const dropdownXpath = `(//label[.//span[normalize-space(text())='${labelText}']]/preceding-sibling::div//div[contains(@class,'ant-select-selector')])[2]`;
  

@@ -49,42 +49,44 @@ export class ECP {
         await dropdown.selectAntDropdown('AgeProofType', data.LA_Age_Proof);
         await dropdown.selectAntDropdown('Option', data.Life_Cover);
         await this.page.waitForLoadState('networkidle');
+        await this.page.waitForTimeout(500);
         await dropdown.selectAntDropdown('MaturityBenfit', data.Maturity_Benefit);
         await dropdown.selectAntDropdown('Deathbenefit', data.Death_Benefit);
 
         if (data.Life_Cover === 'Early Cash') {
 
 			await dropdown.selectAntDropdown('SurvivalBen', data.SB_Benefit)
-
 			await dropdown.selectAntDropdown('Surpaymode', data.SB_Payout);
+
 		}
-        await dropdown.selectAntDropdown('PremFreqmode', data.Frequency);
+
+        // await dropdown.selectAntDropdown('PremFreqmode', data.Frequency);
+        await dropdown.selectPlanPageDropdown('Premium Frequency', data.Frequency);
+        
 
         // Get Age
         const ageStr = await this.age.inputValue();
         const ageInt = parseInt(ageStr);
 
         if (ageInt >= 3 && ageInt <= 55) {
-            // await dropdown.selectAntDropdown('PolicyTerm', data.PT);
-                await dropdown.selectDropdownValueByLabel('Policy Term', data.PT);
 
+            // Below PT, PPT lines are used for ECP V03. Code is commented as V03 is not available in Astra 
 
-			await dropdown.selectAntDropdown('PermiumTerm', data.PPT);
-        } else {
+            // await dropdown.selectDropdownValueByLabel('Policy Term', data.PT);
+			// await dropdown.selectAntDropdown('PermiumTerm', data.PPT);
 
             let PT: string = (100-ageInt).toString();
             
             if (data.Plan_Name?.toString().includes("V04")) {
-                console.log("V04 plan detected");
+                console.log("V04 plan");
         	    await dropdown.selectAntDropdown('PolicyTermSlab', data.Policy_Term_Slab);
+                await this.page.waitForLoadState('networkidle')
+                await this.page.waitForTimeout(500);
 
-                if (data.Policy_Term_Slab === 'Wholelife') {
+                if (data.Policy_Term_Slab.toLowerCase() === 'wholelife') {
 					await dropdown.selectAntDropdown('PolicyTerm', PT);
-
 				} else {
 					await dropdown.selectAntDropdown('PolicyTerm', data.PT);
-
-
 				}
 
                 await dropdown.selectAntDropdown('PremiumTermSlab', data.Premium_Term_Slab);
@@ -120,9 +122,9 @@ export class ECP {
         // Riders
         if (!data.Plan_Name.toString().includes('POS')) {
 
-            await this.stepRiderCheckbox.waitFor({ state: 'visible', timeout: 5000 });
+            await this.stepRiderCheckbox.waitFor({state: 'visible'});
             await this.page.waitForTimeout(500);
-            await this.stepRiderCheckbox.click();   
+            await this.stepRiderCheckbox.click();
 
             const rider = new riderDetails(this.page);
             await rider.fillRiderDetails(testcaseID);

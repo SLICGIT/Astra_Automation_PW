@@ -15,7 +15,7 @@ export class HomePage {
   readonly Life_Type: Locator;
   readonly KYC_Type: Locator;
   readonly continueBtn: Locator;
-
+  readonly astraWebApp: Locator;
 
 
   constructor(page: Page, TC_ID: string) {
@@ -23,6 +23,7 @@ export class HomePage {
     this.page = page;
     const LAdata = getData("Home_Page", TC_ID)
 
+    this.astraWebApp = page.locator("//div[@class='app-icon-box']/img");
     this.createNewProposal = page.locator("//span[text()='Create New Proposal']");
     this.newProposal = page.locator("//span[contains(text(), 'New Proposal')]");
     this.Proposal_Type = page.locator(`//span[text()='${LAdata.Proposal_Type}']`);
@@ -39,7 +40,11 @@ export class HomePage {
 
     await this.page.waitForLoadState('load');
 
+    // await this.astraWebApp.waitFor({state: 'visible'});
+    // await this.astraWebApp.click();
+
     // Click Create New Proposal
+    await this.createNewProposal.waitFor({state: 'visible'});
     await this.createNewProposal.click();
 
     await this.page.waitForLoadState('load');
@@ -72,4 +77,18 @@ export class HomePage {
 
     console.log('Basic Details Filled Successfully');
   }
+
+
+  async launchAstra(): Promise<Page> {
+    const [astraPage] = await Promise.all([
+      this.page.context().waitForEvent('page'),
+      this.astraWebApp.click(),
+    ]);
+
+    await astraPage.waitForLoadState('domcontentloaded');
+
+    return astraPage;
+  }
+
 }
+

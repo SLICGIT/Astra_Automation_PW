@@ -16,6 +16,7 @@ export class DropdownActions {
         await dropdown.waitFor({ state: 'visible' });
         await dropdown.click();
         
+        await this.page.waitForTimeout(50);
  
         //  Loop similar to your Katalon logic
         for (let j = 0; j < 9; j++) {
@@ -159,7 +160,7 @@ export class DropdownActions {
         await dropdown.click();
 
         // Loop logic (same as your Groovy code)
-        for (let j = 0; j < 9; j++) {
+        for (let j = 0; j < 63; j++) {
             for (let i = 1; i < 7; i++) {
             try {
                 const optionXpath = `(//div[contains(@class,'ant-select-item-option-content') and text()='${valueToSelect}'])[${i}]`;
@@ -174,9 +175,10 @@ export class DropdownActions {
             }
 
             // Scroll using keyboard (Arrow Down)
-            await this.page.keyboard.press('ArrowDown');
+            // await this.page.keyboard.press('ArrowDown');
             // await page.waitForTimeout(200); // small wait to stabilize scrolling
             }
+            await this.page.keyboard.press('ArrowDown');
 
         }
 

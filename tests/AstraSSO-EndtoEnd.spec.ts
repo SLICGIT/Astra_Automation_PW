@@ -88,24 +88,33 @@ for (const data of testData) {
             //Creating instances of the pages
             const login = new LoginPage(page);
             const home = new HomePage(page, data.TC_ID);
-            const LA_Details = new LAPage(page,data.TC_ID);
-            const proposerPage = new ProposerDetailsPage(page,data.TC_ID);
-            const address = new AddressPage(page,data.TC_ID);
-            const sourceBy = new SourceByPage(page);
-            const medical = new MedicalPage(page,data.TC_ID);
-            const propMedical = new PropMedicalPage(page,data.TC_ID);
-            const otherPage = new OtherDetailsPage(page);
-            const propotherPage = new PropOtherDetailsPage(page);
-            const nominee = new nomineePage(page, data.TC_ID);
-            const smartcard = new smartCardPage(page,data.TC_ID);
-            const documents = new documentsPage(page,data.TC_ID);
-            const declaration = new declarationPage(page,data.TC_ID);
-            const NACH = new NACHRegistrationPAge(page,data.TC_ID);
-            const payment = new paymentPage(page,data.TC_ID);
 
-            await login.login(data.TC_ID);
+            await login.ssoLogin(data.TC_ID);
             // await page.pause();
-            await home.chooseProposalType(data.TC_ID);
+            // await home.chooseProposalType(data.TC_ID);
+
+            const astraPage = await home.launchAstra();
+
+            // Create another page object using the new Astra tab
+            const astraHomePage = new HomePage(astraPage, data.TC_ID);
+
+            const LA_Details = new LAPage(astraPage,data.TC_ID);
+            const proposerPage = new ProposerDetailsPage(astraPage,data.TC_ID);
+            const address = new AddressPage(astraPage,data.TC_ID);
+            const sourceBy = new SourceByPage(astraPage);
+            const medical = new MedicalPage(astraPage,data.TC_ID);
+            const propMedical = new PropMedicalPage(astraPage,data.TC_ID);
+            const otherPage = new OtherDetailsPage(astraPage);
+            const propotherPage = new PropOtherDetailsPage(astraPage);
+            const nominee = new nomineePage(astraPage, data.TC_ID);
+            const smartcard = new smartCardPage(astraPage,data.TC_ID);
+            const documents = new documentsPage(astraPage,data.TC_ID);
+            const declaration = new declarationPage(astraPage,data.TC_ID);
+            const NACH = new NACHRegistrationPAge(astraPage,data.TC_ID);
+            const payment = new paymentPage(astraPage,data.TC_ID);
+
+            // Continue the Astra execution
+            await astraHomePage.chooseProposalType(data.TC_ID);
 
             await LA_Details.fillLADetails(data.TC_ID);
 
@@ -125,83 +134,83 @@ for (const data of testData) {
             switch (true) {
 
                 case GlobalConfig.planName.toLowerCase().startsWith('shriram life assured savings plan'):
-                    await new ASP(page).fillPlanDetails(data.TC_ID);
+                    await new ASP(astraPage).fillPlanDetails(data.TC_ID);
                     break;
 
                 case GlobalConfig.planName.toLowerCase().startsWith('shriram life assured income plan'):
-                    await new AIP(page).fillPlanDetails(data.TC_ID);
+                    await new AIP(astraPage).fillPlanDetails(data.TC_ID);
                     break;
 
                 case GlobalConfig.planName.toLowerCase().startsWith('shriram life sunishchit laabh'):
-                    await new SunischitLaabh(page).fillPlanDetails(data.TC_ID);
+                    await new SunischitLaabh(astraPage).fillPlanDetails(data.TC_ID);
                     break;
 
                 case GlobalConfig.planName.toLowerCase().startsWith('shriram life smart choice plan'):
-                    await new SCP(page).fillPlanDetails(data.TC_ID);
+                    await new SCP(astraPage).fillPlanDetails(data.TC_ID);
                     break;
 
                 case GlobalConfig.planName.toLowerCase().startsWith('shriram life super income plan'):
-                    await new SIP(page).fillPlanDetails(data.TC_ID);
+                    await new SIP(astraPage).fillPlanDetails(data.TC_ID);
                     break;
 
                 case GlobalConfig.planName.toLowerCase().startsWith('shriram life premier assured benefit'):
-                    await new PAB(page).fillPlanDetails(data.TC_ID);
+                    await new PAB(astraPage).fillPlanDetails(data.TC_ID);
                     break;
 
                 case GlobalConfig.planName.toLowerCase().startsWith('shriram life flexi shield'):
-                    await new flexiShield(page).fillPlanDetails(data.TC_ID);
+                    await new flexiShield(astraPage).fillPlanDetails(data.TC_ID);
                     break;
 
                 case GlobalConfig.planName.toLowerCase().startsWith('shriram life pension plus'):
-                    await new PensionPlus(page).fillPlanDetails(data.TC_ID);
+                    await new PensionPlus(astraPage).fillPlanDetails(data.TC_ID);
                     break;
 
                 case GlobalConfig.planName.toLowerCase().startsWith('shriram life early cash plan'):
-                    await new ECP(page).fillPlanDetails(data.TC_ID);
+                    await new ECP(astraPage).fillPlanDetails(data.TC_ID);
                     break;
 
                 case GlobalConfig.planName.toLowerCase().startsWith('shriram life family protection plan'):
-                    await new FPP(page).fillPlanDetails(data.TC_ID);
+                    await new FPP(astraPage).fillPlanDetails(data.TC_ID);
                     break;
 
                 case GlobalConfig.planName.toLowerCase().startsWith('shriram life smart protection plan sp'):
-                    await new SPP_SP_POS(page).fillPlanDetails(data.TC_ID);
+                    await new SPP_SP_POS(astraPage).fillPlanDetails(data.TC_ID);
                     break;
 
                 case GlobalConfig.planName.toLowerCase().startsWith('shriram life smart protection plan'):
-                    await new SPP_RP(page).fillPlanDetails(data.TC_ID);
+                    await new SPP_RP(astraPage).fillPlanDetails(data.TC_ID);
                     break;
 
                 case GlobalConfig.planName.toLowerCase().startsWith('shriram new shri vidya'):
-                    await new NSV(page).fillPlanDetails(data.TC_ID);
+                    await new NSV(astraPage).fillPlanDetails(data.TC_ID);
                     break;    
  
                 case GlobalConfig.planName.toLowerCase().startsWith('shriram new shri life plan'):
-                    await new NSL(page).fillPlanDetails(data.TC_ID);
+                    await new NSL(astraPage).fillPlanDetails(data.TC_ID);
                     break;
                    
                 case GlobalConfig.planName.toLowerCase().startsWith('shriram life growth plus'):
-                    await new GrowthPlus(page).fillPlanDetails(data.TC_ID);
+                    await new GrowthPlus(astraPage).fillPlanDetails(data.TC_ID);
                     break;
  
                 case GlobalConfig.planName.toLowerCase().startsWith('shriram fortune builder'):
-                    await new FortuneBuilder(page).fillPlanDetails(data.TC_ID);
+                    await new FortuneBuilder(astraPage).fillPlanDetails(data.TC_ID);
                     break;
                
                 case GlobalConfig.planName.toLowerCase().startsWith('shriram life golden jubilee plan'):
-                    await new GoldenJubilee(page).fillPlanDetails(data.TC_ID);
+                    await new GoldenJubilee(astraPage).fillPlanDetails(data.TC_ID);
                     break;
                
                 case GlobalConfig.planName.toLowerCase().startsWith('shriram life wealth pro'):
-                    await new WealthPro(page).fillPlanDetails(data.TC_ID);
+                    await new WealthPro(astraPage).fillPlanDetails(data.TC_ID);
                     break;
 
                 case GlobalConfig.planName.toLowerCase().startsWith('flexi fortune'):
-                    await new TulipCombi1(page).fillPlanDetails(data.TC_ID);
+                    await new TulipCombi1(astraPage).fillPlanDetails(data.TC_ID);
                     break;
 
                 case GlobalConfig.planName.toLowerCase().startsWith('flexi wealth'):
-                    await new TulipCombi2(page).fillPlanDetails(data.TC_ID);
+                    await new TulipCombi2(astraPage).fillPlanDetails(data.TC_ID);
                     break;
 
                 default:

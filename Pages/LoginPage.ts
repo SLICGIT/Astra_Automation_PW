@@ -35,7 +35,7 @@ export class LoginPage {
     
         // await this.page.waitForTimeout(2000);
         await this.password.fill(LAdata.Password);
-        //await this.page.pause();
+        // await this.page.pause();
         await this.captcha.fill("1234");
        
         await this.loginBtn.click();
@@ -43,5 +43,27 @@ export class LoginPage {
         GlobalConfig.actualResultSteps = `${LAdata.Username} Login Successfully`;
         console.log(GlobalConfig.actualResultSteps);
     }
+
+
+    async ssoLogin(TC_ID: string) {
+
+        const LAdata = getData("Login_Page", TC_ID);
+        await this.page.goto(process.env.AstraURL!,{waitUntil: 'load'});
+        // await this.page.setViewportSize({ width: 1920, height: 1080 });
+       
+        // await this.page.waitForTimeout(2000);
+        await this.userName.fill(LAdata.Username);
+    
+        // await this.page.waitForTimeout(2000);
+        await this.password.fill(LAdata.Password);
+        await this.page.pause();
+        // await this.captcha.fill("1234");
+       
+        // await this.loginBtn.click();
+
+        GlobalConfig.actualResultSteps = `${LAdata.Username} Login Successfully`;
+        console.log(GlobalConfig.actualResultSteps);
+    }
+
  
 }

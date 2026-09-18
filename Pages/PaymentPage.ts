@@ -26,18 +26,31 @@ export class paymentPage{
         this.doneBtn = page.locator("xpath=//button[text()='Done']");
     }
 
-    async fillPaymentPage(TC_ID: string, planName: string){
+    async fillPaymentPage(TC_ID: string, proposalType: string){
 
         const data = getData("Payment_Page",TC_ID)
         const dropdown = new DropdownActions(this.page)
         
         await this.page.waitForLoadState('networkidle');
 
-        if(!planName.toLowerCase().startsWith("tulip combi")) {
-            await this.submitBtn.waitFor({state:'visible'});
-            await this.page.locator(`xpath=//span[text()='${data.Payment_Option}']`).click();
-            await this.submitBtn.click();
+        try {
+            await this.submitBtn.waitFor({state:'visible', timeout: 10000});
+
+            if(proposalType !== 'Combo') {
+                // await this.submitBtn.waitFor({state:'visible'});
+                await this.page.locator(`xpath=//span[text()='${data.Payment_Option}']`).click();
+                await this.submitBtn.click();
+            }
+
+        } catch {
+            console.log("Dual/Single payment mode screen is not available");
         }
+
+        // if(proposalType !== 'Combo') {
+        //     await this.submitBtn.waitFor({state:'visible'});
+        //     await this.page.locator(`xpath=//span[text()='${data.Payment_Option}']`).click();
+        //     await this.submitBtn.click();
+        // }
 
         await this.page.waitForLoadState('networkidle');
         await this.page.locator(`//label[text()='${data.Payment_Type}']`).waitFor({state:'visible'});

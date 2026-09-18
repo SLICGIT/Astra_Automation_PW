@@ -39,6 +39,8 @@ export class LAPage {
   readonly nextBtn: Locator;
   readonly Error_msg_DOB: Locator;
 
+  readonly mwpaOption: Locator;
+
   constructor(page: Page,TC_ID: string) {
     this.page = page;
 
@@ -74,6 +76,8 @@ export class LAPage {
     //this.Nationality = page.locator('');
     this.nextBtn = page.locator("//button[@type='submit']//span[text()='Next']");
     this.Error_msg_DOB =page.locator("//span[@class='error-mgs']");
+
+    this.mwpaOption =page.locator(`//button[@name='MWPAPolicy']/span[text()='${LAdata.LA_MWPA_Option}']`);
   }
 
   async fillLADetails(TC_ID: string) {
@@ -110,6 +114,12 @@ export class LAPage {
     await this.page.waitForTimeout(1000);
     await this.maritial_status.click();
 
+    // Select MWPA Option
+    if(LAdata.LA_Gender === 'Male' && LAdata.LA_Marital_Status === 'Married') {
+      await this.mwpaOption.waitFor({state: 'visible', timeout: 5000});
+      await this.mwpaOption.click();
+    }
+
     await this.fatherSpouseName.fill(GenerateName.getName());  //fix=generateName()
     await this.aadhaar.fill(LAdata['LA_Aadhaar']);
     await this.pan.fill(LAdata['LA_PAN']);
@@ -117,6 +127,7 @@ export class LAPage {
     // Income (>=18)
     if (age >= 18) {
       await dropdown.selectAntDropdown( 'LAAnInR', LAdata.LA_Income_Range);
+      await this.annualIncome.waitFor({state:'visible'});
       await this.annualIncome.fill(LAdata['LA_Income']);
     }
 
@@ -131,6 +142,7 @@ export class LAPage {
       // await dropdown.selectAntDropdown('Doyousmoke', LAdata.LA_Smoke);
     }
 
+    //Below line is not required for A server
     await dropdown.selectAntDropdown('Doyousmoke', LAdata.LA_Smoke);
 
     // Screenshot
